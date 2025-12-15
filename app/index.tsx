@@ -17,8 +17,16 @@ import SearchBar from "@/components/searchBar";
 import { Checkbox } from "expo-checkbox";
 import { Ionicons } from "@expo/vector-icons";
 
+
+type ToDoType = {
+  id:number;
+  task:string;
+  isDone: boolean;
+}
+
 const Index = () => {
   const [isChecked, setIsChecked] = useState(false);
+  
   const todoData = [
     {
       id: 1,
@@ -43,9 +51,29 @@ const Index = () => {
     {
       id: 5,
       task: "Task 5",
-      isDone: false,
+      isDone: true,
+    },
+    {
+      id: 6,
+      task: "Task 5",
+      isDone: true,
     },
   ];
+
+  const [todos,setTodos] = useState<ToDoType[]>([]);
+  const [todoText, setTodoText] = useState<string>('');
+
+  const addTodo = () => {
+    const newTodo = {
+      id : Math.random(),
+      task : todoText,
+      isDone : false
+    };
+    todos.push(newTodo);
+    setTodos(todos)
+    setTodoText('')
+  }
+
   return (
     <View style={styles.containser}>
       <SafeAreaView>
@@ -59,28 +87,47 @@ const Index = () => {
           data={todoData}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <View style={styles.cardContainer}>
+            <ToDoItem todo={item} />
+          )}
+        />
+        <KeyboardAvoidingView style={styles.addItemContainer} behavior='height'>
+          <TextInput placeholder="Add item" value={todoText} onChangeText={(text) => setTodoText(text)} style={{height: '100%', width: '90%'}} />
+          <TouchableOpacity onPress={() => addTodo()} style={styles.addItemBtn}>
+            <Ionicons name='add-circle-outline' size={26} color={'#333'}/>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
+        <StatusBar barStyle={"dark-content"} />
+      </SafeAreaView>
+    </View>
+  );
+};
+
+export default Index;
+
+const ToDoItem = ({todo}: {todo:ToDoType}) => {
+  return(
+       <View style={styles.cardContainer}>
 
               {/* card */}
               <View style={styles.card}>
 
                 {/* check-box */}
                 <Checkbox
-                  value={item.isDone}
-                  color={item.isDone ? "#02586cff" : undefined}
+                  value={todo.isDone}
+                  color={todo.isDone ? "#02586cff" : undefined}
                 />
 
                 {/* todo-text */}
                 <Text
                   style={[
                     styles.cardText,
-                    item.isDone && {
+                    todo.isDone && {
                       textDecorationLine: "line-through",
                       color: "gray",
                     },
                   ]}
                 >
-                  {item.task}
+                  {todo.task}
                 </Text>
               </View>
 
@@ -98,21 +145,8 @@ const Index = () => {
                 <Ionicons name="trash" size={26} color={"#333"} />
               </TouchableOpacity>
             </View>
-          )}
-        />
-        <KeyboardAvoidingView style={styles.addItemContainer} behavior='height'>
-          <TextInput placeholder="Add item" style={{height: '100%', width: '90%'}} />
-          <TouchableOpacity onPress={() => {}} style={styles.addItemBtn}>
-            <Ionicons name='add-circle-outline' size={26} color={'#333'}/>
-          </TouchableOpacity>
-        </KeyboardAvoidingView>
-        <StatusBar barStyle={"dark-content"} />
-      </SafeAreaView>
-    </View>
-  );
-};
+  )}
 
-export default Index;
 
 const styles = StyleSheet.create({
   containser: {
